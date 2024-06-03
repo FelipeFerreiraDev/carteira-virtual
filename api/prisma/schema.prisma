@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Wallet {
+  id        String       @id @default(cuid())
+  name      String
+  balance   Float
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  transactions Transaction[]
+  transactionRecurrents TransactionRecurrent[]
+}
+
+model Transaction {
+  id           String       @id @default(cuid())
+  amount       Float
+  type         String
+  observation  String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  wallet       Wallet       @relation(fields: [walletId], references: [id])
+  walletId     String
+  category     Category     @relation(fields: [categoryId], references: [id])
+  categoryId   String
+}
+
+model Category {
+  id        String       @id @default(cuid())
+  name      String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  transactions Transaction[]
+  transactionRecurrents TransactionRecurrent[]
+}
+
+model TransactionRecurrent {
+  id         String       @id @default(cuid())
+  amount     Float
+  type       String
+  observation String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  wallet     Wallet       @relation(fields: [walletId], references: [id])
+  walletId   String
+  category   Category     @relation(fields: [categoryId], references: [id])
+  categoryId String
+  nextDate   DateTime
+  lastDate   DateTime
+  active     Boolean
+  dateFinish DateTime?
+}
